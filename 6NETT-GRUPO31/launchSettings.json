@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "fiap.6nett-grupo31.service": "StartDebugging"
+      }
+    }
+  }
+}

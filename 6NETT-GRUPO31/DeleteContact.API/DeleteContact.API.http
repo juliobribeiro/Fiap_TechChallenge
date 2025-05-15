@@ -1,0 +1,6 @@
+@DeleteContact.API_HostAddress = http://localhost:5152
+
+GET {{DeleteContact.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

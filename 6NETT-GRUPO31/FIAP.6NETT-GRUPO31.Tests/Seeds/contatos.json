@@ -1,0 +1,24 @@
+[
+    {
+        "idContato":"1",
+        "nome":"Rodrigo Grillo",
+        "email":"rodrigo@email.com",
+        "telefone":"1199999999",
+        "ddd":11
+    },
+    {
+        "idContato":"2",
+        "nome":"Ricardo Grillo",
+        "email":"ricardo@email.com",
+        "telefone":"1199999999",
+        "ddd":11
+    },
+    {
+        "idContato":"3",
+        "nome":"Gustavo Grillo",
+        "email":"Gustavo@email.com",
+        "telefone":"1199999999",
+        "ddd":12
+    }    
+
+]

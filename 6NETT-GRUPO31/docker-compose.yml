@@ -1,0 +1,112 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2017-latest-ubuntu
+    environment:
+      SA_PASSWORD: "numsey#2021!"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Express"
+    ports:
+      - "1433:1433"
+    volumes:
+      - C:\dados\volumes\sqlserver:/var/opt/mssql/data      
+    networks:
+      - mynw 
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports: 
+     - 5672:5672
+     - 15672:15672
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - mynw 
+       
+  fiap.6nett-grupo31.service:
+    image: ${DOCKER_REGISTRY-}fiap6nettgrupo31service
+    depends_on: [sqlserver,rabbitmq]
+    build:
+      context: .
+      dockerfile: FIAP.6NETT-GRUPO31.Service/Dockerfile
+    ports: 
+      - "8080:8080"
+    networks:
+      - mynw 
+
+  add-contact:
+    image: ${DOCKER_REGISTRY-}addcontactapi
+    depends_on: [sqlserver,rabbitmq]
+    build:
+      context: .
+      dockerfile: AddContact.API/Dockerfile
+    ports: 
+      - "8081:8081"
+    networks:
+      - mynw 
+
+  update-contact:
+    image: ${DOCKER_REGISTRY-}updatecontactapi
+    depends_on: [sqlserver,rabbitmq]
+    build:
+      context: .
+      dockerfile: UpdateContact.API/Dockerfile
+    ports: 
+      - "8082:8082"
+    networks:
+      - mynw 
+      
+  delete-contact:
+    image: ${DOCKER_REGISTRY-}deletecontactapi
+    depends_on: [sqlserver,rabbitmq]
+    build:
+      context: .
+      dockerfile: DeleteContact.API/Dockerfile
+    ports: 
+      - "8083:8083"
+    networks:
+      - mynw   
+ 
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    networks:
+      - mynw 
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./grafana:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - mynw 
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    networks:
+      - mynw 
+
+networks:
+  mynw:
